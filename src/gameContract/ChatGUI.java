@@ -7,7 +7,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -82,23 +86,47 @@ public class ChatGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (isConnected == false) {
 					username = nameTextArea.getText();
+//					String ip = ipTextArea.getText();
+					String ip = "137.190.250.174";
 					nameTextArea.setEditable(false);
 
 					try {
-						// this is what checks for an existing server
-						sock = new Socket(InetAddress.getByName(ipTextArea.getText()), port);
-						InputStreamReader streamreader = new InputStreamReader(sock.getInputStream());
-//						Object output = new Thread(new ObjectOutputI())
-						reader = new BufferedReader(streamreader);   //object stream reader?
-						writer = new PrintWriter(sock.getOutputStream());
+						Socket socket = new Socket(InetAddress.getByName(ip), port);
+//						new Thread(new Reader(s.getInputStream())).start();
+//						s.getOutputStream().write(1);
+						
+						ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+						ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+						out.flush();
+						System.out.println("Streams created.");
+
+						
+//						read object or write object only no write UTF
+						
+						
+//						sock = new Socket(InetAddress.getByName(ipTextArea.getText()), port);
+//						InputStreamReader streamreader = new InputStreamReader(sock.getInputStream());
+//						reader = new BufferedReader(streamreader);
+//						writer = new PrintWriter(sock.getOutputStream());
+//						writer.println(username);
+//						writer.flush();
+//						Thread incomingReader = new Thread(new IncomingReader());
+//						incomingReader.start();
+						
+//						// this is what checks for an existing server
+//						sock = new Socket(InetAddress.getByName(ipTextArea.getText()), port);
+////						InputStreamReader streamreader = new InputStreamReader(sock.getInputStream());
+//						ObjectOutputStream output = new ObjectOutputStream(streamreader);
+//						reader = new BufferedReader(/*streamreader*/);   //object stream reader?
+//						writer = new PrintWriter(sock.getOutputStream());
 
 						isConnected = true;
 
 					} catch (Exception ex) {
 						chatTextArea.append("Not able to connect\n");
 					}
-					Thread incomingReader = new Thread(new IncomingReader());
-					incomingReader.start();
+//					Thread incomingReader = new Thread(new IncomingReader());
+//					incomingReader.start();
 				} else if (isConnected == true) {
 					chatTextArea.append("dumbACK You are already connected. \n");
 				}
@@ -222,6 +250,30 @@ public class ChatGUI extends JFrame {
 		}
 		isConnected = false;
 		nameTextArea.setEditable(true);
+	}
+	
+	private class Reader implements Runnable {
+		private InputStream input;
+		
+		public Reader(InputStream is) {
+			input = is;
+		}
+		
+		public void run() {
+			int read;
+			try {
+				while ((read = input.read()) >= 0) {
+					chatTextArea.setText(read + "");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void main(String [] args){
+		ChatGUI chat = new ChatGUI();
+				chat.runChatGUI();
 	}
 
 }
