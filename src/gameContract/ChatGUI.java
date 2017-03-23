@@ -24,6 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
+import blackjack.message.MessageFactory;
+
 public class ChatGUI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -34,6 +36,8 @@ public class ChatGUI extends JFrame {
 	private BufferedReader reader;
 	private PrintWriter writer;
 	private Boolean isConnected = false;
+	ObjectOutputStream out;
+	ObjectInputStream in;
 
 	private JFrame frame;
 	private JPanel northPanel;
@@ -91,42 +95,26 @@ public class ChatGUI extends JFrame {
 					nameTextArea.setEditable(false);
 
 					try {
-						Socket socket = new Socket(InetAddress.getByName(ip), port);
-//						new Thread(new Reader(s.getInputStream())).start();
-//						s.getOutputStream().write(1);
+						sock = new Socket(InetAddress.getByName(ip), port);
+
 						
-						ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-						ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+						out = new ObjectOutputStream(sock.getOutputStream());
+						MessageFactory.getLoginMessage(username);
+
+						in = new ObjectInputStream(sock.getInputStream());
+//						out.writeObject(username);
 						out.flush();
 						System.out.println("Streams created.");
 
 						
 //						read object or write object only no write UTF
-						
-						
-//						sock = new Socket(InetAddress.getByName(ipTextArea.getText()), port);
-//						InputStreamReader streamreader = new InputStreamReader(sock.getInputStream());
-//						reader = new BufferedReader(streamreader);
-//						writer = new PrintWriter(sock.getOutputStream());
-//						writer.println(username);
-//						writer.flush();
-//						Thread incomingReader = new Thread(new IncomingReader());
-//						incomingReader.start();
-						
-//						// this is what checks for an existing server
-//						sock = new Socket(InetAddress.getByName(ipTextArea.getText()), port);
-////						InputStreamReader streamreader = new InputStreamReader(sock.getInputStream());
-//						ObjectOutputStream output = new ObjectOutputStream(streamreader);
-//						reader = new BufferedReader(/*streamreader*/);   //object stream reader?
-//						writer = new PrintWriter(sock.getOutputStream());
 
 						isConnected = true;
 
 					} catch (Exception ex) {
 						chatTextArea.append("Not able to connect\n");
 					}
-//					Thread incomingReader = new Thread(new IncomingReader());
-//					incomingReader.start();
+
 				} else if (isConnected == true) {
 					chatTextArea.append("dumbACK You are already connected. \n");
 				}
@@ -252,24 +240,6 @@ public class ChatGUI extends JFrame {
 		nameTextArea.setEditable(true);
 	}
 	
-	private class Reader implements Runnable {
-		private InputStream input;
-		
-		public Reader(InputStream is) {
-			input = is;
-		}
-		
-		public void run() {
-			int read;
-			try {
-				while ((read = input.read()) >= 0) {
-					chatTextArea.setText(read + "");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 	
 	public static void main(String [] args){
 		ChatGUI chat = new ChatGUI();
