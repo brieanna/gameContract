@@ -99,11 +99,12 @@ public class ChatGUI extends JFrame {
 
 						
 						out = new ObjectOutputStream(sock.getOutputStream());
-						MessageFactory.getLoginMessage(username);
+						
+						out.writeObject(MessageFactory.getLoginMessage("username"));
+						out.flush();
 
 						in = new ObjectInputStream(sock.getInputStream());
-//						out.writeObject(username);
-						out.flush();
+						
 						System.out.println("Streams created.");
 
 						
@@ -191,13 +192,13 @@ public class ChatGUI extends JFrame {
 
 		} else {
 			try {
-				writer.println(replyTextArea.getText());
-				username = nameTextArea.getText();
-				writer.flush();
-			} catch (Exception ex) {
-				chatTextArea.append("Please enter IP and UserName to connect. \n");
-			}
 
+				out.writeObject(replyTextArea.getText());
+				out.flush();
+				chatTextArea.setText(chatTextArea.getText() + replyTextArea.getText() + "\n");
+			} catch (Exception ex) {
+				chatTextArea.append("Your message did not send \n");
+			}
 		}
 
 		replyTextArea.setText("");
@@ -211,9 +212,12 @@ public class ChatGUI extends JFrame {
 
 			try {
 				while (sock.isConnected() && !sock.isClosed()) {
-					stream = reader.readLine();
-					System.out.println(stream);
-					chatTextArea.append(stream + "\n");
+					Object input = in.readObject();
+					System.out.println(input + "");
+					chatTextArea.append(input + "\n");
+//					stream = reader.readLine();
+//					System.out.println(stream);
+//					chatTextArea.append(stream + "\n");
 
 				}
 			} catch (Exception ex) {
