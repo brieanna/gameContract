@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
+import blackjack.message.Message;
 import blackjack.message.MessageFactory;
 
 public class ChatGUI extends JFrame {
@@ -91,7 +92,7 @@ public class ChatGUI extends JFrame {
 				if (isConnected == false) {
 					username = nameTextArea.getText();
 //					String ip = ipTextArea.getText();
-					String ip = "137.190.250.174";
+					String ip = "34.208.31.178";
 					nameTextArea.setEditable(false);
 
 					try {
@@ -115,6 +116,9 @@ public class ChatGUI extends JFrame {
 					} catch (Exception ex) {
 						chatTextArea.append("Not able to connect\n");
 					}
+					
+					Thread incomingReader = new Thread(new IncomingReader());
+					incomingReader.start();
 
 				} else if (isConnected == true) {
 					chatTextArea.append("dumbACK You are already connected. \n");
@@ -211,8 +215,8 @@ public class ChatGUI extends JFrame {
 			String stream;
 
 			try {
-				while (sock.isConnected() && !sock.isClosed()) {
-					Object input = in.readObject();
+				while (/*sock.isConnected() && !sock.isClosed()*/ true) {
+					Message input = (Message) in.readObject();
 					System.out.println(input + "");
 					chatTextArea.append(input + "\n");
 //					stream = reader.readLine();
