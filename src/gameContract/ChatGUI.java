@@ -101,7 +101,7 @@ public class ChatGUI extends JFrame {
 						
 						out = new ObjectOutputStream(sock.getOutputStream());
 						
-						out.writeObject(MessageFactory.getLoginMessage("username"));
+						out.writeObject(MessageFactory.getLoginMessage(nameTextArea.getText()));
 						out.flush();
 
 						in = new ObjectInputStream(sock.getInputStream());
@@ -217,8 +217,9 @@ public class ChatGUI extends JFrame {
 			try {
 				while (/*sock.isConnected() && !sock.isClosed()*/ true) {
 					Message input = (Message) in.readObject();
-					System.out.println(input + "");
-					chatTextArea.append(input + "\n");
+					System.out.println("Get Type: " + input.getType());
+					System.out.println(input.getType() + "");
+					chatTextArea.append(input.getType() + "\n");
 //					stream = reader.readLine();
 //					System.out.println(stream);
 //					chatTextArea.append(stream + "\n");
