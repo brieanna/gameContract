@@ -204,7 +204,6 @@ public class ChatGUI extends JFrame {
 				ChatMessage chat = message.getChatMessage(text);
 				out.writeObject(chat);
 				out.flush();
-				chatTextArea.append(text);
 			} catch (Exception ex) {
 				chatTextArea.append("Your message did not send \n");
 			}
@@ -236,7 +235,8 @@ public class ChatGUI extends JFrame {
 					case CHAT:
 						
 						ChatMessage chat = (ChatMessage)input;
-						chatTextArea.append(chat.getText() + "\n");
+						String name = chat.getUsername();
+						chatTextArea.append(name + ": " + chat.getText() + "\n");
 						break;
 					case GAME_STATE:
 						break;
