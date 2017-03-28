@@ -25,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 import blackjack.message.Message;
+import blackjack.message.Message.MessageType;
 import blackjack.message.MessageFactory;
 
 public class ChatGUI extends JFrame {
@@ -92,7 +93,7 @@ public class ChatGUI extends JFrame {
 				if (isConnected == false) {
 					username = nameTextArea.getText();
 //					String ip = ipTextArea.getText();
-					String ip = "34.208.31.178";
+					String ip = "52.35.72.251";
 					nameTextArea.setEditable(false);
 
 					try {
@@ -217,12 +218,28 @@ public class ChatGUI extends JFrame {
 			try {
 				while (/*sock.isConnected() && !sock.isClosed()*/ true) {
 					Message input = (Message) in.readObject();
-					System.out.println("Get Type: " + input.getType());
-					System.out.println(input.getType() + "");
-					chatTextArea.append(input.getType() + "\n");
-//					stream = reader.readLine();
-//					System.out.println(stream);
-//					chatTextArea.append(stream + "\n");
+
+					MessageType type = input.getType();
+					
+					//LOGIN, ACK, DENY, CHAT, GAME_STATE, CARD, GAME_ACTION
+					switch (type){
+					case LOGIN:
+						break;
+					case ACK: 
+						System.out.println("ACKNOWLEDGE");
+						break;
+					case DENY:
+						System.out.println("DENY");
+						break;
+					case CHAT:
+						break;
+					case GAME_STATE:
+						break;
+					case CARD:
+						break;
+					case GAME_ACTION:
+						break;
+					}
 
 				}
 			} catch (Exception ex) {
@@ -230,24 +247,7 @@ public class ChatGUI extends JFrame {
 		}
 	}
 
-	public void disconnect() {
-		String bye = (username + ": :Disconnect");
-		try {
-			writer.println(bye); 
-			writer.flush(); 
-		} catch (Exception e) {
-			chatTextArea.append("Could not send Disconnect message.\n");
-		}
 
-		try {
-			chatTextArea.append("Disconnected.\n");
-			sock.close();
-		} catch (Exception ex) {
-			chatTextArea.append("Failed to disconnect. \n");
-		}
-		isConnected = false;
-		nameTextArea.setEditable(true);
-	}
 	
 	
 	public static void main(String [] args){
