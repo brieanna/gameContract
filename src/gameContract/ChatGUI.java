@@ -57,7 +57,8 @@ public class ChatGUI extends JFrame {
 	public void runChatGUI() {
 
 		frame = new JFrame();
-		frame.setSize(460, 400);
+//		frame.setSize(460, 400);
+		frame.setSize(700, 400);
 		northPanel = new JPanel();
 		southPanel = new JPanel();
 		centerPanel = new JPanel();
@@ -167,6 +168,16 @@ public class ChatGUI extends JFrame {
 				sendAction();
 			}
 		});
+		
+		JButton startButton = new JButton();
+		startButton.setText("Start");
+		startButton.setSize(5,5);
+		startButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e){
+				startAction();
+			}
+		});
 
 		southPanel.add(replyScrollPane);
 		southPanel.add(sendButton);
@@ -176,6 +187,7 @@ public class ChatGUI extends JFrame {
 		frame.add(northPanel, BorderLayout.NORTH);
 		frame.add(centerPanel, BorderLayout.CENTER);
 		frame.add(southPanel, BorderLayout.SOUTH);
+		frame.add(startButton,  BorderLayout.EAST);
 
 		frame.setVisible(true);
 
@@ -200,6 +212,10 @@ public class ChatGUI extends JFrame {
 
 		replyTextArea.setText("");
 		replyTextArea.requestFocus();
+	}
+	
+	private void startAction(){
+		
 	}
 
 	public class IncomingReader implements Runnable {
