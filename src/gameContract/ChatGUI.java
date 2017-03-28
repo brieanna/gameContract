@@ -2,18 +2,12 @@ package gameContract;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -37,8 +31,6 @@ public class ChatGUI extends JFrame {
 	public static String username;
 	private int port = 8989;
 	private Socket sock;
-	private BufferedReader reader;
-	private PrintWriter writer;
 	private Boolean isConnected = false;
 	ObjectOutputStream out;
 	ObjectInputStream in;
@@ -94,32 +86,28 @@ public class ChatGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (isConnected == false) {
 					username = nameTextArea.getText();
-//					String ip = ipTextArea.getText();
+					// String ip = ipTextArea.getText();
 					String ip = "52.35.72.251";
 					nameTextArea.setEditable(false);
 
 					try {
 						sock = new Socket(InetAddress.getByName(ip), port);
 
-						
 						out = new ObjectOutputStream(sock.getOutputStream());
-						
+
 						out.writeObject(MessageFactory.getLoginMessage(nameTextArea.getText()));
 						out.flush();
 
 						in = new ObjectInputStream(sock.getInputStream());
-						
-						System.out.println("Streams created.");
 
-						
-//						read object or write object only no write UTF
+						System.out.println("Streams created.");
 
 						isConnected = true;
 
 					} catch (Exception ex) {
 						chatTextArea.append("Not able to connect\n");
 					}
-					
+
 					Thread incomingReader = new Thread(new IncomingReader());
 					incomingReader.start();
 
@@ -201,6 +189,7 @@ public class ChatGUI extends JFrame {
 			try {
 				String text = replyTextArea.getText();
 				MessageFactory message = new MessageFactory();
+				@SuppressWarnings("static-access")
 				ChatMessage chat = message.getChatMessage(text);
 				out.writeObject(chat);
 				out.flush();
@@ -218,23 +207,22 @@ public class ChatGUI extends JFrame {
 		public void run() {
 
 			try {
-				while (/*sock.isConnected() && !sock.isClosed()*/ true) {
-					MessageFactory message = new MessageFactory();
+				while (sock.isConnected() && !sock.isClosed()) {
 					Message input = (Message) in.readObject();
 					MessageType type = input.getType();
-					
-					switch (type){
+
+					switch (type) {
 					case LOGIN:
 						break;
-					case ACK: 
+					case ACK:
 						System.out.println("ACKNOWLEDGE");
 						break;
 					case DENY:
 						System.out.println("DENY");
 						break;
 					case CHAT:
-						
-						ChatMessage chat = (ChatMessage)input;
+
+						ChatMessage chat = (ChatMessage) input;
 						String name = chat.getUsername();
 						chatTextArea.append(name + ": " + chat.getText() + "\n");
 						break;
@@ -252,13 +240,9 @@ public class ChatGUI extends JFrame {
 		}
 	}
 
-
-	
-	
-	public static void main(String [] args){
+	public static void main(String[] args) {
 		ChatGUI chat = new ChatGUI();
-				chat.runChatGUI();
+		chat.runChatGUI();
 	}
 
 }
-
