@@ -2,6 +2,7 @@ package gameContract;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -198,10 +199,12 @@ public class ChatGUI extends JFrame {
 
 		} else {
 			try {
-				
-				out.writeObject(replyTextArea.getText());
+				String text = replyTextArea.getText();
+				MessageFactory message = new MessageFactory();
+				ChatMessage chat = message.getChatMessage(text);
+				out.writeObject(chat);
 				out.flush();
-				chatTextArea.setText(chatTextArea.getText() + replyTextArea.getText() + "\n");
+				chatTextArea.append(text);
 			} catch (Exception ex) {
 				chatTextArea.append("Your message did not send \n");
 			}
@@ -214,17 +217,13 @@ public class ChatGUI extends JFrame {
 	public class IncomingReader implements Runnable {
 
 		public void run() {
-			String stream;
 
 			try {
 				while (/*sock.isConnected() && !sock.isClosed()*/ true) {
+					MessageFactory message = new MessageFactory();
 					Message input = (Message) in.readObject();
-//					System.out.println("Get Type: " + input.getType());
-//					System.out.println(input.getType() + "");
-//					chatTextArea.append(input.getType() + "\n");
 					MessageType type = input.getType();
 					
-					//LOGIN, ACK, DENY, CHAT, GAME_STATE, CARD, GAME_ACTION
 					switch (type){
 					case LOGIN:
 						break;
@@ -235,7 +234,9 @@ public class ChatGUI extends JFrame {
 						System.out.println("DENY");
 						break;
 					case CHAT:
-						chatTextArea.append(input + "\n");
+						
+						ChatMessage chat = (ChatMessage)input;
+						chatTextArea.append(chat.getText() + "\n");
 						break;
 					case GAME_STATE:
 						break;
