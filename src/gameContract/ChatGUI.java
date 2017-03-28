@@ -20,6 +20,8 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 import blackjack.message.ChatMessage;
+import blackjack.message.GameStateMessage;
+import blackjack.message.GameStateMessage.GameAction;
 import blackjack.message.Message;
 import blackjack.message.Message.MessageType;
 import blackjack.message.MessageFactory;
@@ -87,8 +89,7 @@ public class ChatGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (isConnected == false) {
 					username = nameTextArea.getText();
-					// String ip = ipTextArea.getText();
-					String ip = "52.35.72.251";
+					 String ip = ipTextArea.getText();
 					nameTextArea.setEditable(false);
 
 					try {
@@ -215,7 +216,14 @@ public class ChatGUI extends JFrame {
 	}
 	
 	private void startAction(){
-		
+		try{
+//			GameStateMessage state = null /*new GameStateMessage(GameAction.START)*/;
+//					state.getStartMessage();
+			out.writeObject(GameAction.START);
+			out.flush();
+		}catch(Exception ex){
+			chatTextArea.append("Game did NOT start");
+		}
 	}
 
 	public class IncomingReader implements Runnable {
@@ -237,16 +245,17 @@ public class ChatGUI extends JFrame {
 						System.out.println("DENY");
 						break;
 					case CHAT:
-
 						ChatMessage chat = (ChatMessage) input;
 						String name = chat.getUsername();
 						chatTextArea.append(name + ": " + chat.getText() + "\n");
 						break;
 					case GAME_STATE:
+						System.out.println("State: " + input);
 						break;
 					case CARD:
 						break;
 					case GAME_ACTION:
+						System.out.println("Action: " + input);
 						break;
 					}
 
