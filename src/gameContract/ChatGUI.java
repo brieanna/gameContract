@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
+import blackjack.message.ChatMessage;
 import blackjack.message.Message;
 import blackjack.message.Message.MessageType;
 import blackjack.message.MessageFactory;
@@ -152,7 +153,7 @@ public class ChatGUI extends JFrame {
 			public void keyPressed(KeyEvent e) {
 
 				if ((e.getKeyCode() == KeyEvent.VK_ENTER && (e.isMetaDown()))) {
-					sendActionPerformed();
+					sendAction();
 				} else {
 
 				}
@@ -174,7 +175,7 @@ public class ChatGUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sendActionPerformed();
+				sendAction();
 			}
 		});
 
@@ -192,12 +193,12 @@ public class ChatGUI extends JFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	private void sendActionPerformed() {
+	private void sendAction() {
 		if ((replyTextArea.getText()).equals("")) {
 
 		} else {
 			try {
-
+				
 				out.writeObject(replyTextArea.getText());
 				out.flush();
 				chatTextArea.setText(chatTextArea.getText() + replyTextArea.getText() + "\n");
@@ -218,7 +219,9 @@ public class ChatGUI extends JFrame {
 			try {
 				while (/*sock.isConnected() && !sock.isClosed()*/ true) {
 					Message input = (Message) in.readObject();
-
+//					System.out.println("Get Type: " + input.getType());
+//					System.out.println(input.getType() + "");
+//					chatTextArea.append(input.getType() + "\n");
 					MessageType type = input.getType();
 					
 					//LOGIN, ACK, DENY, CHAT, GAME_STATE, CARD, GAME_ACTION
@@ -232,6 +235,7 @@ public class ChatGUI extends JFrame {
 						System.out.println("DENY");
 						break;
 					case CHAT:
+						chatTextArea.append(input + "\n");
 						break;
 					case GAME_STATE:
 						break;
